@@ -21,7 +21,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 # DEMO=1 in the server's settings: the public demo for my portfolio. Anyone can try the staff page
 # (no PIN), the home page shows the phone and the TV side by side, and orders clear after a while.
-DEMO = os.environ.get("DEMO") == "1"
+DEMO = os.environ.get("DEMO", "").strip().lower() in ("1", "true", "yes")
 DEMO_KEEPS_FOR = 30 * 60 * 1000  # ms
 
 # The staff PIN, from the server's settings (never in the code). Empty = no PIN, for trying it out.
