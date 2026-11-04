@@ -4,8 +4,9 @@ A screen for the TV by a café's counter. When food is ready, staff tap **Ready 
 phone, and the order's number appears on the TV with a chime. No more shouting numbers over
 the noise, and customers can sit down instead of crowding the counter.
 
-**▶ Live demo: coming soon** (it'll show the staff phone and the TV side by side, live). It's on free
-hosting, so if nobody has visited for a while the first load takes a little longer.
+**[▶ Open the live demo](https://order-ready.onrender.com)**: the staff phone and the TV side by side,
+both live. Best on a laptop, with your phone in hand to scan the QR code. It's on free hosting, so if
+nobody has visited for a while the first load takes a little longer.
 
 | The TV by the counter | The staff phone | In Bahasa Malaysia |
 |---|---|---|
