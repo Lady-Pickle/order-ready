@@ -31,6 +31,10 @@
     </section>
   </main>
 
+  <!-- Browsers only play sound after a tap, so this shows until someone taps it once -->
+  <button id="sound" class="sound" type="button">🔔 Turn on the chime · Hidupkan bunyi</button>
+  <p id="offline" class="offline" role="status" hidden>Reconnecting… · Menyambung semula…</p>
+
   <footer class="foot">
     <div>
       <p id="note"></p>
@@ -39,7 +43,7 @@
     <p class="credit">Order screen by <b><i>{</i>SA<i>}</i></b></p>
   </footer>
 
-  <!-- settings.js first (the café's name), then the shared list of orders, then this screen -->
+  <!-- settings.js first (the café's name), then talking to the server, then this screen -->
   <script src="settings.js"></script>
   <script src="orders.js"></script>
   <script src="screen.js"></script>

@@ -17,7 +17,20 @@
     <h1 id="cafe"></h1>
   </header>
 
-  <main>
+  <!-- Asked once on each phone (if the café set a PIN), so customers can't change the screen -->
+  <form id="pin-form" class="add pin" hidden>
+    <label for="pin">Staff PIN</label>
+    <div class="add-row">
+      <input id="pin" type="password" inputmode="numeric" autocomplete="off">
+      <button type="submit">Start</button>
+    </div>
+    <p class="hint">Only once on each phone: it's remembered after that.</p>
+    <p id="pin-problem" class="problem" role="alert"></p>
+  </form>
+
+  <p id="offline" class="offline" role="status" hidden>Can't reach the server. Check the Wi-Fi; it keeps trying.</p>
+
+  <main id="main">
     <form id="add" class="add">
       <label for="number">New order number</label>
       <div class="add-row">
@@ -37,7 +50,7 @@
       <ul id="ready" class="orders" data-empty="Nothing waiting to be collected"></ul>
     </section>
 
-    <p class="tv-link"><a href="screen.html" target="_blank">Open the TV screen ↗</a></p>
+    <p class="tv-link"><a href="/tv" target="_blank">Open the TV screen ↗</a></p>
   </main>
 
   <!-- After a number is collected or removed: a few seconds to take it back -->
@@ -48,7 +61,7 @@
 
   <footer class="foot">Order screen by <b><i>{</i>SA<i>}</i></b></footer>
 
-  <!-- settings.js first (the café's name), then the shared list of orders, then this page -->
+  <!-- settings.js first (the café's name), then talking to the server, then this page -->
   <script src="settings.js"></script>
   <script src="orders.js"></script>
   <script src="staff.js"></script>

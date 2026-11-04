@@ -226,6 +226,41 @@ h2 span { /* the BM under the English */
   color: var(--orange-text);
 }
 
+/* ---- The chime button (top, between the name and the clock) and "Reconnecting" (bottom) ---- */
+.sound,
+.offline {
+  position: fixed;
+  left: 50%;
+  top: 4vmin;
+  margin: 0;
+  padding: 1.6vmin 3vmin;
+  border: 0;
+  border-radius: 99px;
+  font: inherit;
+  font-size: 2.4vmin;
+  font-weight: 800;
+  transform: translateX(-50%);
+  box-shadow: 0 1vmin 3vmin rgb(0 0 0 / 0.25);
+}
+
+.sound {
+  background: var(--orange);
+  color: #1c1917;
+  cursor: pointer;
+}
+
+.offline { /* at the bottom, so it never covers the chime button */
+  top: auto;
+  bottom: 3vmin;
+  background: #b91c1c;
+  color: #fff;
+}
+
+.sound[hidden],
+.offline[hidden] {
+  display: none;
+}
+
 /* A screen standing upright (a tablet or a TV turned sideways): the columns one above the other. */
 @media (orientation: portrait) {
   .board {
@@ -237,5 +272,16 @@ h2 span { /* the BM under the English */
     flex-direction: column;
     gap: 1vmin;
     text-align: center;
+  }
+
+  /* No room at the top when it's upright: the chime button goes at the bottom, "Reconnecting" at the top */
+  .sound {
+    top: auto;
+    bottom: 3vmin;
+  }
+
+  .offline {
+    top: 2vmin;
+    bottom: auto;
   }
 }
