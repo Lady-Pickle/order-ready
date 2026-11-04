@@ -1,0 +1,206 @@
+/* The TV screen, in the {SA} charcoal and orange. Everything is sized by the screen's shorter
+   side (vmin), so it fills any TV, lying down or standing up, and reads from across the room. */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;          /* a TV can't scroll */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: #1c1917;
+  color: #fafaf9;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  border-top: 0.8vmin solid #f97316;
+}
+
+/* ---- Top: the café's name and the time ---- */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3vmin 4vw 2.5vmin;
+}
+
+.eyebrow { /* — ORDER STATUS */
+  display: flex;
+  align-items: center;
+  gap: 1vmin;
+  margin: 0 0 0.6vmin;
+  color: #f97316;
+  font-size: 1.9vmin;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 2.4vmin;
+  height: 0.4vmin;
+  border-radius: 0.2vmin;
+  background: currentColor;
+}
+
+h1 {
+  margin: 0;
+  font-size: 5.2vmin;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.clock {
+  margin: 0;
+  font-size: 6vmin;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- The two columns ---- */
+.board {
+  display: grid;
+  grid-template-columns: 2fr 3fr;  /* "Ready" gets more room: that's what people look for */
+  gap: 2.5vw;
+  min-height: 0;
+  padding: 0 4vw 2vmin;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 3.5vmin 2vw;
+  border-radius: 2.5vmin;
+  background: #292524;
+}
+
+.ready {
+  background: linear-gradient(160deg, #3a2a1f, #292524 70%);
+  box-shadow: inset 0 0 0 0.35vmin #f97316;
+}
+
+h2 {
+  margin: 0 0 3vmin;
+  font-size: 4.4vmin;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+h2 span { /* the BM under the English */
+  display: block;
+  margin-top: 0.5vmin;
+  color: #a8a29e;
+  font-size: 2.4vmin;
+  font-weight: 600;
+}
+
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  gap: 1.8vmin 1.2vw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.number {
+  border-radius: 1.6vmin;
+  text-align: center;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.preparing .number {
+  padding: 1.4vmin 0;
+  background: #1c1917;
+  color: #d6d3d1;
+  font-size: 6vmin;
+}
+
+.ready .number {
+  padding: 1.6vmin 0;
+  background: #f97316;
+  color: #1c1917;
+  font-size: 10vmin;
+}
+
+/* Just ready: it pops in, then gently pulses for a while so it's noticed */
+.ready .number.new {
+  animation: pop 0.5s ease-out, pulse 1.4s ease-in-out 0.5s infinite;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 1.2vmin rgb(249 115 22 / 0.35);
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ready .number.new {
+    animation: none;
+    box-shadow: 0 0 0 1vmin rgb(249 115 22 / 0.35);
+  }
+}
+
+/* ---- Bottom: what to do, and the credit ---- */
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4vw;
+  padding: 1.5vmin 4vw 2.5vmin;
+  color: #d6d3d1;
+  font-size: 2.2vmin;
+}
+
+.foot p {
+  margin: 0;
+}
+
+.foot .bm { /* the BM under the English */
+  margin-top: 0.4vmin;
+  color: #a8a29e;
+}
+
+.credit {
+  flex-shrink: 0;
+  color: #a8a29e;
+  font-size: 1.8vmin;
+}
+
+.credit b {
+  font-family: "Courier Prime", monospace;
+  color: #fafaf9;
+}
+
+.credit i {
+  font-style: normal;
+  color: #f97316;
+}
+
+/* A screen standing upright (a tablet or a TV turned sideways): the columns one above the other. */
+@media (orientation: portrait) {
+  .board {
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr 3fr;
+  }
+
+  .foot {
+    flex-direction: column;
+    gap: 1vmin;
+    text-align: center;
+  }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order ready</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+  <link rel="stylesheet" href="screen.css">
+</head>
+<body>
+  <!-- The TV by the counter: orders being prepared on the left, ready to collect on the right.
+       Both languages at once, because nobody can tap a TV to switch. -->
+  <header class="top">
+    <div>
+      <p class="eyebrow">Order status · Status pesanan</p>
+      <h1 id="cafe"></h1>
+    </div>
+    <p id="clock" class="clock"></p>
+  </header>
+
+  <main class="board">
+    <section class="column preparing">
+      <h2>Preparing <span>Sedang disediakan</span></h2>
+      <ul id="preparing" class="numbers"></ul>
+    </section>
+    <section class="column ready">
+      <h2>Ready to collect <span>Sedia untuk diambil</span></h2>
+      <ul id="ready" class="numbers"></ul>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div>
+      <p id="note"></p>
+      <p id="note-bm" class="bm"></p>
+    </div>
+    <p class="credit">Order screen by <b><i>{</i>SA<i>}</i></b></p>
+  </footer>
+
+  <!-- settings.js first: it holds the café's name, which screen.js then shows -->
+  <script src="settings.js"></script>
+  <script src="screen.js"></script>
+</body>
+</html>
