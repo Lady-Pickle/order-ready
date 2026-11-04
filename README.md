@@ -83,6 +83,7 @@ wasn't right, like a lighter screen, and BM that sounds natural.
 | `public/staff.html`, `staff.css`, `staff.js` | The staff page (at `/staff`) |
 | `public/orders.js` | How both pages talk to the server |
 | `public/demo.html`, `qrcode.js` | The portfolio demo (only shown when `DEMO` is on) |
+| `public/og-image.jpg` | The picture shown when the demo's link is shared |
 | `app.py` | The server: keeps the orders, checks the staff PIN |
 | `requirements.txt` | What the server needs installed |
 | `docs/screenshots/` | The pictures in this README |
