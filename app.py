@@ -19,8 +19,13 @@ from functools import wraps
 from flask import Flask, jsonify, redirect, request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+# DEMO=1 in the server's settings: the public demo for my portfolio. Anyone can try the staff page
+# (no PIN), the home page shows the phone and the TV side by side, and orders clear after a while.
+DEMO = os.environ.get("DEMO") == "1"
+DEMO_KEEPS_FOR = 30 * 60 * 1000  # ms
+
 # The staff PIN, from the server's settings (never in the code). Empty = no PIN, for trying it out.
-STAFF_PIN = os.environ.get("STAFF_PIN", "").strip()
+STAFF_PIN = "" if DEMO else os.environ.get("STAFF_PIN", "").strip()
 
 # A phone that types the right PIN gets this long "staff key", and sends it with every change.
 # Guessing the PIN is limited (see MOST_WRONG), but phones already set up never are: in a café
@@ -44,7 +49,7 @@ app = Flask(__name__, static_folder="public", static_url_path="")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # online, the visitor's address comes from the host's proxy
 
 lock = threading.Lock()  # one change at a time, even when two staff tap at once
-state = {"orders": [], "last": ""}  # an order: {number, status "preparing" or "ready", ready: when, in ms}
+state = {"orders": [], "last": ""}  # an order: {number, status "preparing" or "ready", added and ready: when, in ms}
 wrong_tries = {}  # address -> times of its recent wrong PINs
 
 
@@ -54,11 +59,14 @@ def now_ms():
 
 def everything(**extra):
     """What both pages get back: the orders, the last number added, the server's time, and whether a PIN is needed."""
+    if DEMO:  # the demo tidies itself, so the next visitor doesn't find a screen full of old numbers
+        state["orders"] = [order for order in state["orders"] if now_ms() - order["added"] < DEMO_KEEPS_FOR]
     return jsonify(orders=state["orders"], last=state["last"], now=now_ms(), pinNeeded=bool(STAFF_PIN), **extra)
 
 
-def problem(message, status):
-    return jsonify(problem=message), status
+def problem(code, message, status):
+    """Something didn't work. The code lets the staff page say it in English or BM."""
+    return jsonify(problem=message, code=code), status
 
 
 def staff_only(view):
@@ -67,7 +75,7 @@ def staff_only(view):
     @wraps(view)
     def checked(*args, **kwargs):
         if STAFF_PIN and not hmac.compare_digest(request.headers.get("X-Staff-Key", "").encode(), STAFF_KEY.encode()):
-            return problem("Please type the staff PIN.", 401)
+            return problem("need-pin", "Please type the staff PIN.", 401)
         with lock:
             return view(*args, **kwargs)
 
@@ -83,7 +91,7 @@ def find(number):
 
 @app.get("/")
 def home():
-    return redirect("/staff")
+    return app.send_static_file("demo.html") if DEMO else redirect("/staff")
 
 
 @app.get("/tv")
@@ -113,13 +121,13 @@ def pin():
     with lock:
         recent = [t for t in wrong_tries.get(address, []) if time.time() - t < WAIT_AFTER_WRONG]
         if len(recent) >= MOST_WRONG:
-            return problem("Too many wrong PINs. Wait 10 minutes, then try again.", 429)
+            return problem("too-many", "Too many wrong PINs. Wait 10 minutes, then try again.", 429)
         typed = str((request.get_json(silent=True) or {}).get("pin", "")).strip()
         if not hmac.compare_digest(typed.encode(), STAFF_PIN.encode()):
             if len(wrong_tries) > 1000:  # forget old ones, so this list stays small
                 wrong_tries.clear()
             wrong_tries[address] = recent + [time.time()]
-            return problem("That PIN isn't right.", 401)
+            return problem("wrong-pin", "That PIN isn't right.", 401)
         wrong_tries.pop(address, None)
     return jsonify(key=STAFF_KEY)
 
@@ -129,12 +137,12 @@ def pin():
 def add():
     number = re.sub(r"\s+", "", str((request.get_json(silent=True) or {}).get("number", ""))).upper()
     if not NUMBER.match(number):
-        return problem("Use up to 6 letters and numbers, like A12.", 400)
+        return problem("bad-number", "Use up to 6 letters and numbers, like A12.", 400)
     if find(number) >= 0:
-        return problem(f"{number} is already on the screen.", 409)
+        return problem("already", f"{number} is already on the screen.", 409)
     if len(state["orders"]) >= MOST_ORDERS:
-        return problem("The list is full. Tap Collected on some orders first.", 409)
-    state["orders"].append({"number": number, "status": "preparing"})
+        return problem("full", "The list is full. Tap Collected on some orders first.", 409)
+    state["orders"].append({"number": number, "status": "preparing", "added": now_ms()})
     state["last"] = number
     return everything()
 
@@ -145,7 +153,7 @@ def change(number, action):
     """ready, not-ready (back to Preparing) or remove (collected, or added by mistake)."""
     at = find(number)
     if at < 0:
-        return problem(f"{number} isn't on the list any more.", 404)
+        return problem("gone", f"{number} isn't on the list any more.", 404)
     order = state["orders"][at]
     if action == "ready":
         order.update(status="ready", ready=now_ms())
@@ -156,7 +164,7 @@ def change(number, action):
         state["orders"].pop(at)
         return everything(removed={"order": order, "at": at})  # so Undo can put it back where it was
     else:
-        return problem("Unknown change.", 404)
+        return problem("unknown", "Unknown change.", 404)
     return everything()
 
 
@@ -168,11 +176,12 @@ def restore():
     order = body.get("order") or {}
     number = str(order.get("number", ""))
     if not NUMBER.match(number) or order.get("status") not in ("preparing", "ready"):
-        return problem("That can't be undone.", 400)
+        return problem("unknown", "That can't be undone.", 400)
     if find(number) < 0 and len(state["orders"]) < MOST_ORDERS:
-        kept = {"number": number, "status": order["status"]}
+        kept = {"number": number, "status": order["status"], "added": now_ms()}
         if order["status"] == "ready":
-            kept["ready"] = int(order.get("ready") or now_ms())
+            ready = order.get("ready")
+            kept["ready"] = ready if isinstance(ready, int) else now_ms()
         at = body.get("at")
         state["orders"].insert(at if isinstance(at, int) and at >= 0 else len(state["orders"]), kept)
     return everything()
@@ -186,6 +195,14 @@ def no_caching(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "same-origin"
     return response
+
+
+if DEMO:  # a few numbers to start with, so the demo's first visitor sees what it looks like
+    state["orders"] = [
+        {"number": number, "status": status, "added": now_ms(), **({"ready": now_ms() - 60000} if status == "ready" else {})}
+        for number, status in [("A01", "ready"), ("A02", "ready"), ("A03", "preparing"), ("A04", "preparing")]
+    ]
+    state["last"] = "A04"
 
 
 if __name__ == "__main__":

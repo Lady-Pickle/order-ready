@@ -6,9 +6,127 @@ const UNDO_FOR = 6 * 1000;
 // How often to check for changes made on another phone.
 const CHECK_EVERY = 3 * 1000;
 
+// Every word on the page, in English and BM. {n} is an order's number.
+const TEXT = {
+  en: {
+    switchTo: "BM",
+    pinLabel: "Staff PIN",
+    start: "Start",
+    pinHint: "Only once on each phone: it's remembered after that.",
+    pinChanged: "The PIN has changed. Please type the new one.",
+    offline: "Can't reach the server. Check the Wi-Fi; it keeps trying.",
+    noServer: "Can't reach the server. Check the Wi-Fi.",
+    newNumber: "New order number",
+    add: "Add",
+    typeNumber: "Type the order's number first.",
+    preparing: "Preparing",
+    ready: "Ready to collect",
+    nothingPreparing: "Nothing being prepared",
+    nothingReady: "Nothing waiting to be collected",
+    remove: "Remove",
+    removeLabel: "Remove {n}",
+    readyButton: "Ready ✓",
+    notReady: "Not ready",
+    collected: "Collected",
+    wasRemoved: "{n} removed",
+    wasCollected: "{n} collected",
+    undo: "Undo",
+    openTv: "Open the TV screen ↗",
+    problems: {
+      "bad-number": "Use up to 6 letters and numbers, like A12.",
+      already: "{n} is already on the screen.",
+      full: "The list is full. Tap Collected on some orders first.",
+      "wrong-pin": "That PIN isn't right.",
+      "too-many": "Too many wrong PINs. Wait 10 minutes, then try again.",
+      other: "That didn't work. Try again.",
+    },
+  },
+  bm: {
+    switchTo: "EN",
+    pinLabel: "PIN kakitangan",
+    start: "Mula",
+    pinHint: "Sekali sahaja pada setiap telefon: ia akan diingati selepas itu.",
+    pinChanged: "PIN telah ditukar. Sila taip PIN yang baru.",
+    offline: "Tidak dapat sambung ke pelayan. Periksa Wi-Fi; ia akan terus mencuba.",
+    noServer: "Tidak dapat sambung ke pelayan. Periksa Wi-Fi.",
+    newNumber: "Nombor pesanan baru",
+    add: "Tambah",
+    typeNumber: "Taip nombor pesanan dahulu.",
+    preparing: "Sedang disediakan",
+    ready: "Sedia untuk diambil",
+    nothingPreparing: "Tiada pesanan sedang disediakan",
+    nothingReady: "Tiada pesanan menunggu untuk diambil",
+    remove: "Buang",
+    removeLabel: "Buang {n}",
+    readyButton: "Siap ✓",
+    notReady: "Belum siap",
+    collected: "Diambil",
+    wasRemoved: "{n} dibuang",
+    wasCollected: "{n} sudah diambil",
+    undo: "Batal",
+    openTv: "Buka skrin TV ↗",
+    problems: {
+      "bad-number": "Guna hingga 6 huruf dan nombor, contohnya A12.",
+      already: "{n} sudah ada di skrin.",
+      full: "Senarai sudah penuh. Tekan Diambil pada beberapa pesanan dahulu.",
+      "wrong-pin": "PIN itu salah.",
+      "too-many": "Terlalu banyak PIN salah. Tunggu 10 minit, kemudian cuba lagi.",
+      other: "Tidak berjaya. Cuba lagi.",
+    },
+  },
+};
+
+const LANGUAGE_KEY = "order-ready-language";
+
+let language = startLanguage();
 let drawn = ""; // the orders on the page now, so it's only redrawn when something changed
 let undoTimer = null;
 let takeBack = null; // what Undo does, if it's showing
+
+// The language chosen last time on this phone, or BM if the phone is set to Malay.
+function startLanguage() {
+  try {
+    const saved = localStorage.getItem(LANGUAGE_KEY);
+    if (saved in TEXT) return saved;
+  } catch {
+    // can't read it: go by the phone's language
+  }
+  return navigator.language.toLowerCase().startsWith("ms") ? "bm" : "en";
+}
+
+// A word in the current language, with an order's number put in.
+function say(key, number) {
+  return TEXT[language][key].replace("{n}", number);
+}
+
+// A problem from the server, in the current language.
+function sayProblem(answer, number) {
+  const problems = TEXT[language].problems;
+  return (problems[answer.data.code] || problems.other).replace("{n}", number);
+}
+
+// Put every word on the page into the current language.
+function useLanguage() {
+  document.documentElement.lang = language === "bm" ? "ms" : "en";
+  for (const el of document.querySelectorAll("[data-text]")) el.textContent = say(el.dataset.text);
+  document.getElementById("preparing").dataset.empty = say("nothingPreparing");
+  document.getElementById("ready").dataset.empty = say("nothingReady");
+  document.getElementById("language").textContent = say("switchTo");
+  document.getElementById("problem").textContent = "";
+  document.getElementById("pin-problem").textContent = "";
+  drawn = ""; // so the buttons are redrawn too, next time the orders arrive
+}
+
+document.getElementById("language").addEventListener("click", () => {
+  language = language === "en" ? "bm" : "en";
+  try {
+    localStorage.setItem(LANGUAGE_KEY, language);
+  } catch {
+    // can't save it: it starts in the phone's language next time
+  }
+  useLanguage();
+  refresh();
+});
 
 // Make a new piece of the page, with a class and (optionally) some text.
 function make(tag, className, text) {
@@ -37,25 +155,28 @@ function show(data) {
   const ready = orders.filter((order) => order.status === "ready").sort((a, b) => b.ready - a.ready); // newest first, like the TV
 
   fill("preparing", preparing, (order) => [
-    button("Remove", "remove", () => removeOrder(order.number, `${order.number} removed`), `Remove ${order.number}`),
-    button("Ready ✓", "go", () => act(order.number, "ready")),
+    button(say("remove"), "remove", () => removeOrder(order.number, "wasRemoved"), say("removeLabel", order.number)),
+    button(say("readyButton"), "go", () => act(order.number, "ready")),
   ]);
   fill("ready", ready, (order) => [
-    button("Not ready", "remove", () => act(order.number, "not-ready")),
-    button("Collected", "go done", () => removeOrder(order.number, `${order.number} collected`)),
+    button(say("notReady"), "remove", () => act(order.number, "not-ready")),
+    button(say("collected"), "go done", () => removeOrder(order.number, "wasCollected")),
   ]);
 
   document.getElementById("preparing-count").textContent = preparing.length || "";
   document.getElementById("ready-count").textContent = ready.length || "";
 }
 
-// One list: a row per order, with its number and its buttons.
+// One list: a row per order: its number with the small "mistake" button under it, then the big button.
 function fill(id, list, buttonsFor) {
   const rows = document.getElementById(id);
   rows.replaceChildren();
   for (const order of list) {
+    const [small, big] = buttonsFor(order);
+    const which = make("div", "which");
+    which.append(make("span", "number", order.number), small);
     const row = make("li", "order");
-    row.append(make("span", "number", order.number), ...buttonsFor(order));
+    row.append(which, big);
     rows.append(row);
   }
 }
@@ -73,7 +194,7 @@ async function send(path, body = {}) {
   const answer = await ask(path, body);
   online(answer.status !== 0);
   if (answer.status === 401) {
-    askForPin(savedKey() ? "The PIN has changed. Please type the new one." : "");
+    askForPin(savedKey() ? say("pinChanged") : "");
     return null;
   }
   if (!answer.ok) {
@@ -94,7 +215,7 @@ async function removeOrder(number, message) {
   const answer = await send(`/api/orders/${encodeURIComponent(number)}/remove`);
   if (!answer || !answer.ok) return;
   const { removed } = answer.data;
-  offerUndo(message, () => send("/api/orders/restore", removed));
+  offerUndo(say(message, number), () => send("/api/orders/restore", removed));
 }
 
 function offerUndo(message, undo) {
@@ -123,13 +244,13 @@ document.getElementById("add").addEventListener("submit", async (event) => {
   event.preventDefault();
   const number = input.value.replace(/\s+/g, "").toUpperCase();
   if (!number) {
-    problem.textContent = "Type the order's number first.";
+    problem.textContent = say("typeNumber");
     return;
   }
   const answer = await send("/api/orders", { number });
   if (!answer) return;
   if (!answer.ok) {
-    problem.textContent = answer.data.problem || "That didn't work. Try again.";
+    problem.textContent = sayProblem(answer, number);
     return;
   }
   problem.textContent = "";
@@ -164,9 +285,7 @@ pinForm.addEventListener("submit", async (event) => {
     refresh();
     return;
   }
-  document.getElementById("pin-problem").textContent = answer.status === 0
-    ? "Can't reach the server. Check the Wi-Fi."
-    : answer.data.problem;
+  document.getElementById("pin-problem").textContent = answer.status === 0 ? say("noServer") : sayProblem(answer);
 });
 
 // ---- Keeping up with other phones ----
@@ -183,9 +302,10 @@ async function refresh() {
   return answer.data;
 }
 
-// Start: the café's name, the orders, and the next number ready to add (or the PIN, the first time).
+// Start: the words, the café's name, the orders, and the next number ready to add (or the PIN, the first time).
 document.getElementById("cafe").textContent = CAFE;
 document.title = `Staff · ${CAFE}`;
+useLanguage();
 refresh().then((data) => {
   if (!data) return;
   input.value = nextNumber(data.last);

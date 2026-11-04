@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order ready screen · {SA}</title>
+  <meta name="description" content="Staff tap Ready on their phone, and the order number appears on the TV by the counter, with a chime.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+  <style>
+    /* The demo for my portfolio: the staff phone and the TV side by side, both live. */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 0 16px;
+      background: #faf7f2;
+      color: #1c1917;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      border-top: 6px solid #f97316;
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    header {
+      max-width: 720px;
+      padding: 32px 0 24px;
+    }
+
+    .eyebrow { /* — PORTFOLIO DEMO */
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 6px;
+      color: #c2410c;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 5vw, 44px);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      margin: 0;
+      color: #44403c;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    /* The phone on the left, the TV on the right */
+    .stage {
+      display: grid;
+      grid-template-columns: 380px 1fr;  /* the phone: 360 wide inside, like most phones */
+      gap: 32px;
+      align-items: start;
+    }
+
+    .label {
+      margin: 0 0 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .label span {
+      color: #78716c;
+      font-weight: 600;
+    }
+
+    .phone iframe,
+    .tv iframe {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: #faf7f2;
+    }
+
+    .phone .frame { /* a phone: a dark rim with round corners */
+      padding: 10px;
+      border-radius: 36px;
+      background: #1c1917;
+      box-shadow: 0 16px 40px rgb(28 25 23 / 0.18);
+    }
+
+    .phone iframe {
+      height: 700px;
+      border-radius: 26px;
+    }
+
+    .tv .frame { /* a TV: a thin dark rim */
+      padding: 10px;
+      border-radius: 14px;
+      background: #1c1917;
+      box-shadow: 0 16px 40px rgb(28 25 23 / 0.18);
+    }
+
+    .tv iframe {
+      aspect-ratio: 16 / 9;
+      border-radius: 4px;
+    }
+
+    .stand { /* the TV's stand */
+      width: 22%;
+      height: 14px;
+      margin: 0 auto;
+      border-radius: 0 0 8px 8px;
+      background: #44403c;
+    }
+
+    /* Under the TV: try it on a real phone */
+    .try {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 28px;
+      padding: 18px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: inset 0 0 0 1.5px #e7e5e4;
+    }
+
+    .try svg {
+      flex-shrink: 0;
+      width: 120px;
+      height: 120px;
+    }
+
+    .try h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .try p {
+      margin: 0;
+      color: #44403c;
+      line-height: 1.5;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-top: 10px !important;
+    }
+
+    a {
+      color: #c2410c;
+      font-weight: 700;
+    }
+
+    .note {
+      margin: 16px 0 0;
+      color: #78716c;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    footer {
+      padding: 40px 0 32px;
+      color: #78716c;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    footer b {
+      font-family: "Courier Prime", monospace;
+      color: #1c1917;
+    }
+
+    footer i {
+      font-style: normal;
+      color: #c2410c;
+    }
+
+    /* A narrow screen (a phone): the TV first, then the staff page; no "try it on your phone", they're on one already */
+    @media (max-width: 860px) {
+      .stage {
+        grid-template-columns: 1fr;
+      }
+
+      .tv {
+        order: -1;
+      }
+
+      .phone .frame {
+        padding: 0;
+        border-radius: 16px;
+        background: none;
+        box-shadow: inset 0 0 0 1.5px #e7e5e4;
+      }
+
+      .phone iframe {
+        height: 640px;
+        border-radius: 16px;
+      }
+
+      .try {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <p class="eyebrow">Portfolio demo</p>
+      <h1>Order ready screen</h1>
+      <p>When food is ready, staff tap <b>Ready ✓</b> on their phone and the number appears on the TV
+        by the counter, with a chime. No more calling out numbers over the noise. Try it: add a number
+        on the phone, tap <b>Ready ✓</b>, and watch the TV.</p>
+    </header>
+
+    <main class="stage">
+      <section class="phone">
+        <p class="label">Staff phone <span>· at the counter</span></p>
+        <div class="frame"><iframe src="/staff" title="The staff page"></iframe></div>
+      </section>
+
+      <section class="tv">
+        <p class="label">TV <span>· where customers wait</span></p>
+        <div class="frame"><iframe src="/tv" title="The TV screen"></iframe></div>
+        <div class="stand"></div>
+
+        <div class="try">
+          <div id="qr"></div>
+          <div>
+            <h2>Try it with your own phone</h2>
+            <p>Scan this to open the staff page on your phone, then tap <b>Ready ✓</b> and watch this TV change.</p>
+            <p class="links"><a href="/staff" target="_blank">Staff page ↗</a> <a href="/tv" target="_blank">TV screen, full size ↗</a></p>
+          </div>
+        </div>
+
+        <p class="note">This demo is shared, so other visitors may be trying it too, and numbers clear
+          after 30 minutes. A real café gets its own copy, with a staff PIN so customers can't change it.
+          It's on free hosting: if nobody has visited for a while, the first load takes a little longer.</p>
+      </section>
+    </main>
+
+    <footer>Order screen by <b><i>{</i>SA<i>}</i></b> · <a href="https://github.com/Lady-Pickle">github.com/Lady-Pickle</a></footer>
+  </div>
+
+  <script src="qrcode.js"></script>
+  <script>
+    // The QR code for the staff page, at this site's own address. One small square for each dark dot,
+    // with a white border of 4 dots around it, which phones need to find the code.
+    const qr = qrcode(0, "M");
+    qr.addData(location.origin + "/staff");
+    qr.make();
+    const size = qr.getModuleCount();
+    let dots = "";
+    for (let row = 0; row < size; row++) {
+      for (let col = 0; col < size; col++) {
+        if (qr.isDark(row, col)) dots += `M${col} ${row}h1v1h-1z`;
+      }
+    }
+    document.getElementById("qr").innerHTML =
+      `<svg viewBox="-4 -4 ${size + 8} ${size + 8}" shape-rendering="crispEdges" role="img" aria-label="QR code for the staff page">` +
+      `<rect x="-4" y="-4" width="${size + 8}" height="${size + 8}" fill="#fff"/><path d="${dots}" fill="#1c1917"/></svg>`;
+  </script>
+</body>
+</html>
