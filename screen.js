@@ -1,16 +1,6 @@
 // The TV screen: the orders being prepared, and the ones ready to collect.
 
-// For now, some made-up orders to see the design. Step 3 gets the real ones from the staff page.
-// ready: when it was marked ready (newest first on the screen); the newest glows for a while.
-let orders = [
-  { number: "A12", status: "preparing" },
-  { number: "A13", status: "preparing" },
-  { number: "A14", status: "preparing" },
-  { number: "A15", status: "preparing" },
-  { number: "A09", status: "ready", ready: Date.now() - 120000 },
-  { number: "A10", status: "ready", ready: Date.now() - 60000 },
-  { number: "A11", status: "ready", ready: Date.now() },
-];
+// The orders come from the staff page (see orders.js). A newly ready one glows for a while.
 
 // How many fit on the screen at once; any more wait their turn (the oldest ready ones go first).
 const MOST = { preparing: 12, ready: 9 };
@@ -28,6 +18,7 @@ function make(tag, className, text) {
 
 // Draw both columns from the list of orders.
 function show() {
+  const orders = readState().orders;
   const preparing = orders.filter((order) => order.status === "preparing"); // oldest first, as they came in
   const ready = orders.filter((order) => order.status === "ready").sort((a, b) => b.ready - a.ready); // newest first
 
@@ -53,6 +44,7 @@ function tick() {
 }
 
 // Start: the café's details, the orders, and the clock (checked every few seconds, so it's never a minute behind).
+document.body.dataset.theme = THEME;
 document.getElementById("cafe").textContent = CAFE;
 document.getElementById("note").textContent = NOTE.en;
 document.getElementById("note-bm").textContent = NOTE.bm;
@@ -61,3 +53,4 @@ show();
 tick();
 setInterval(tick, 5000);
 setInterval(show, 5000); // a number stops glowing on time
+whenStateChanges(show); // the staff page changed the orders: show it straight away

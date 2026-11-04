@@ -23,11 +23,11 @@
   <main class="board">
     <section class="column preparing">
       <h2>Preparing <span>Sedang disediakan</span></h2>
-      <ul id="preparing" class="numbers"></ul>
+      <ul id="preparing" class="numbers" data-empty="No orders right now · Tiada pesanan sekarang"></ul>
     </section>
     <section class="column ready">
       <h2>Ready to collect <span>Sedia untuk diambil</span></h2>
-      <ul id="ready" class="numbers"></ul>
+      <ul id="ready" class="numbers" data-empty="Nothing ready yet · Belum ada yang sedia"></ul>
     </section>
   </main>
 
@@ -39,8 +39,9 @@
     <p class="credit">Order screen by <b><i>{</i>SA<i>}</i></b></p>
   </footer>
 
-  <!-- settings.js first: it holds the café's name, which screen.js then shows -->
+  <!-- settings.js first (the café's name), then the shared list of orders, then this screen -->
   <script src="settings.js"></script>
+  <script src="orders.js"></script>
   <script src="screen.js"></script>
 </body>
 </html>

@@ -1,5 +1,31 @@
-/* The TV screen, in the {SA} charcoal and orange. Everything is sized by the screen's shorter
-   side (vmin), so it fills any TV, lying down or standing up, and reads from across the room. */
+/* The TV screen, in the {SA} orange: light (cream) or dark (charcoal), set by THEME in settings.js.
+   Everything is sized by the screen's shorter side (vmin), so it fills any TV, lying down or
+   standing up, and reads from across the room. */
+:root {
+  --page: #faf7f2;
+  --text: #1c1917;
+  --soft: #44403c;           /* the "Preparing" numbers and the note */
+  --muted: #78716c;          /* the BM under the English */
+  --column: #ffffff;
+  --column-edge: #e7e5e4;
+  --ready-glow: #ffedd5;     /* the warm corner of the "Ready" column */
+  --waiting: #f5f5f4;        /* behind a "Preparing" number */
+  --orange: #f97316;
+  --orange-text: #c2410c;    /* orange words, darker so they're easy to read on cream */
+}
+
+body[data-theme="dark"] {
+  --page: #1c1917;
+  --text: #fafaf9;
+  --soft: #d6d3d1;
+  --muted: #a8a29e;
+  --column: #292524;
+  --column-edge: #292524;
+  --ready-glow: #3a2a1f;
+  --waiting: #1c1917;
+  --orange-text: #f97316;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -10,10 +36,10 @@ body {
   overflow: hidden;          /* a TV can't scroll */
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: #1c1917;
-  color: #fafaf9;
+  background: var(--page);
+  color: var(--text);
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-  border-top: 0.8vmin solid #f97316;
+  border-top: 0.8vmin solid var(--orange);
 }
 
 /* ---- Top: the café's name and the time ---- */
@@ -29,7 +55,7 @@ body {
   align-items: center;
   gap: 1vmin;
   margin: 0 0 0.6vmin;
-  color: #f97316;
+  color: var(--orange-text);
   font-size: 1.9vmin;
   font-weight: 800;
   letter-spacing: 0.2em;
@@ -74,12 +100,13 @@ h1 {
   overflow: hidden;
   padding: 3.5vmin 2vw;
   border-radius: 2.5vmin;
-  background: #292524;
+  background: var(--column);
+  box-shadow: inset 0 0 0 0.2vmin var(--column-edge);
 }
 
 .ready {
-  background: linear-gradient(160deg, #3a2a1f, #292524 70%);
-  box-shadow: inset 0 0 0 0.35vmin #f97316;
+  background: linear-gradient(160deg, var(--ready-glow), var(--column) 70%);
+  box-shadow: inset 0 0 0 0.35vmin var(--orange);
 }
 
 h2 {
@@ -92,7 +119,7 @@ h2 {
 h2 span { /* the BM under the English */
   display: block;
   margin-top: 0.5vmin;
-  color: #a8a29e;
+  color: var(--muted);
   font-size: 2.4vmin;
   font-weight: 600;
 }
@@ -107,6 +134,14 @@ h2 span { /* the BM under the English */
   list-style: none;
 }
 
+.numbers:empty::after { /* "Nothing ready yet" */
+  content: attr(data-empty);
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 2.6vmin;
+  font-weight: 600;
+}
+
 .number {
   border-radius: 1.6vmin;
   text-align: center;
@@ -117,15 +152,15 @@ h2 span { /* the BM under the English */
 
 .preparing .number {
   padding: 1.4vmin 0;
-  background: #1c1917;
-  color: #d6d3d1;
+  background: var(--waiting);
+  color: var(--soft);
   font-size: 6vmin;
 }
 
 .ready .number {
   padding: 1.6vmin 0;
-  background: #f97316;
-  color: #1c1917;
+  background: var(--orange);
+  color: #1c1917;            /* dark on orange in both themes: white on orange is hard to read */
   font-size: 10vmin;
 }
 
@@ -162,7 +197,7 @@ h2 span { /* the BM under the English */
   justify-content: space-between;
   gap: 4vw;
   padding: 1.5vmin 4vw 2.5vmin;
-  color: #d6d3d1;
+  color: var(--soft);
   font-size: 2.2vmin;
 }
 
@@ -172,23 +207,23 @@ h2 span { /* the BM under the English */
 
 .foot .bm { /* the BM under the English */
   margin-top: 0.4vmin;
-  color: #a8a29e;
+  color: var(--muted);
 }
 
 .credit {
   flex-shrink: 0;
-  color: #a8a29e;
+  color: var(--muted);
   font-size: 1.8vmin;
 }
 
 .credit b {
   font-family: "Courier Prime", monospace;
-  color: #fafaf9;
+  color: var(--text);
 }
 
 .credit i {
   font-style: normal;
-  color: #f97316;
+  color: var(--orange-text);
 }
 
 /* A screen standing upright (a tablet or a TV turned sideways): the columns one above the other. */

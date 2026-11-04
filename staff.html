@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff · Order ready</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+  <link rel="stylesheet" href="staff.css">
+</head>
+<body>
+  <!-- The staff page, on a phone at the counter: add a number when an order comes in,
+       tap Ready when it's done, and Collected when the customer picks it up. -->
+  <header class="top">
+    <p class="eyebrow">Staff · Kakitangan</p>
+    <h1 id="cafe"></h1>
+  </header>
+
+  <main>
+    <form id="add" class="add">
+      <label for="number">New order number</label>
+      <div class="add-row">
+        <input id="number" name="number" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="6">
+        <button type="submit">Add</button>
+      </div>
+      <p id="problem" class="problem" role="alert"></p>
+    </form>
+
+    <section class="list preparing">
+      <h2>Preparing <span id="preparing-count" class="count"></span></h2>
+      <ul id="preparing" class="orders" data-empty="Nothing being prepared"></ul>
+    </section>
+
+    <section class="list ready">
+      <h2>Ready to collect <span id="ready-count" class="count"></span></h2>
+      <ul id="ready" class="orders" data-empty="Nothing waiting to be collected"></ul>
+    </section>
+
+    <p class="tv-link"><a href="screen.html" target="_blank">Open the TV screen ↗</a></p>
+  </main>
+
+  <!-- After a number is collected or removed: a few seconds to take it back -->
+  <div id="undo" class="undo" role="status" hidden>
+    <span id="undo-text"></span>
+    <button id="undo-button" type="button">Undo</button>
+  </div>
+
+  <footer class="foot">Order screen by <b><i>{</i>SA<i>}</i></b></footer>
+
+  <!-- settings.js first (the café's name), then the shared list of orders, then this page -->
+  <script src="settings.js"></script>
+  <script src="orders.js"></script>
+  <script src="staff.js"></script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+/* The staff page, made for a phone: big buttons a busy thumb can't miss. Light, in the {SA} orange. */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 560px;
+  min-height: 100vh;
+  padding: 0 16px 96px;      /* room at the bottom for the Undo bar */
+  background: #faf7f2;
+  color: #1c1917;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  border-top: 6px solid #f97316;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+/* ---- Top: the café's name ---- */
+.top {
+  padding: 20px 0 8px;
+}
+
+.eyebrow { /* — STAFF */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+/* ---- Adding a number ---- */
+.add {
+  margin: 16px 0 8px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px #e7e5e4;
+}
+
+.add label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1.5px solid #d6d3d1;
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.add input:focus {
+  border-color: #f97316;
+  outline: 3px solid rgb(249 115 22 / 0.25);
+}
+
+.add button {
+  padding: 0 24px;
+  border: 0;
+  border-radius: 12px;
+  background: #1c1917;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.problem {
+  margin: 8px 0 0;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.problem:empty {
+  display: none;
+}
+
+/* ---- The two lists ---- */
+.list {
+  margin-top: 24px;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.count {
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #e7e5e4;
+  font-size: 14px;
+  text-align: center;
+}
+
+.ready .count {
+  background: #f97316;
+}
+
+.count:empty {
+  display: none;
+}
+
+.orders {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.orders:empty::after { /* "Nothing being prepared" */
+  content: attr(data-empty);
+  padding: 14px 16px;
+  border: 1.5px dashed #d6d3d1;
+  border-radius: 14px;
+  color: #78716c;
+}
+
+.order {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px #e7e5e4;
+}
+
+.ready .order {
+  background: #fff7ed;
+  box-shadow: inset 0 0 0 1.5px #fdba74;
+}
+
+.order .number {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 30px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+}
+
+.order button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.order .remove { /* the small "undo a mistake" buttons */
+  padding: 0 12px;
+  background: transparent;
+  color: #78716c;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.order .go {
+  min-width: 128px;
+  padding: 0 18px;
+  background: #f97316;
+  color: #1c1917;
+  font-size: 18px;
+}
+
+.order .done {
+  background: #1c1917;
+  color: #fff;
+}
+
+.order button:active {
+  transform: scale(0.97);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #f97316;
+  outline-offset: 2px;
+}
+
+.tv-link {
+  margin: 28px 0 0;
+  text-align: center;
+}
+
+.tv-link a {
+  color: #c2410c;
+  font-weight: 700;
+}
+
+/* ---- The Undo bar, along the bottom ---- */
+.undo {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(528px, calc(100% - 32px));
+  padding: 8px 8px 8px 18px;
+  border-radius: 14px;
+  background: #1c1917;
+  color: #fff;
+  font-weight: 600;
+  transform: translateX(-50%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+}
+
+.undo[hidden] {
+  display: none;
+}
+
+.undo span {
+  flex: 1;
+}
+
+.undo button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #f97316;
+  color: #1c1917;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ---- Bottom ---- */
+.foot {
+  margin-top: 32px;
+  color: #78716c;
+  font-size: 13px;
+  text-align: center;
+}
+
+.foot b {
+  font-family: "Courier Prime", monospace;
+  color: #1c1917;
+}
+
+.foot i {
+  font-style: normal;
+  color: #c2410c;
+}
